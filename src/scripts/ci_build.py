@@ -210,6 +210,9 @@ def determine_flags(target, target_os, target_cpu, target_cc, cc_bin, ccache,
     if target in ['docs', 'codeql', 'hybrid-tls13-interop-test', 'limbo']:
         test_cmd = None
 
+    if target in ['codeql']:
+        flags += ['--no-optimizations']
+
     if target == 'cross-win64':
         # this test compiles under MinGW but fails when run under Wine
         disabled_tests.append('certstor_system')
@@ -247,11 +250,13 @@ def determine_flags(target, target_os, target_cpu, target_cc, cc_bin, ccache,
                 'dh_invalid', 'dh_kat', 'dh_keygen', 'dl_group_gen', 'dlies',
                 'dsa_kat_verify', 'dsa_param', 'ecc_basemul', 'ecdsa_verify_wycheproof',
                 'ed25519_sign', 'elgamal_decrypt', 'elgamal_encrypt', 'elgamal_keygen',
-                'frodo_kat_tests', 'ffi_dsa', 'ffi_elgamal', 'hash_nist_mc', 'mce_keygen',
-                'passhash9', 'pbkdf', 'pwdhash', 'rsa_encrypt', 'rsa_pss', 'rsa_pss_raw',
-                'scrypt', 'srp6_kat', 'srp6_rt', 'unit_tls', 'x509_path_bsi',
-                'x509_path_rsa_pss', 'xmss_keygen', 'xmss_keygen_reference',
-                'xmss_sign', 'xmss_verify', 'xmss_verify_invalid' ]
+                'ffi_dh', 'ffi_dsa', 'ffi_elgamal', 'frodo_kat_tests', 'hash_nist_mc',
+                'hss_lms_keygen', 'hss_lms_sign', 'mce_keygen', 'passhash9', 'pbkdf',
+                'pwdhash', 'rsa_encrypt', 'rsa_pss', 'rsa_pss_raw', 'scrypt',
+                'sphincsplus', 'sphincsplus_fors', 'sphincsplus_keygen', 'srp6_kat',
+                'srp6_rt', 'unit_tls', 'x509_path_bsi', 'x509_path_rsa_pss',
+                'xmss_keygen', 'xmss_keygen_reference', 'xmss_sign', 'xmss_verify', 'xmss_verify_invalid'
+            ]
 
             disabled_tests += slow_tests
 
@@ -358,7 +363,6 @@ def determine_flags(target, target_os, target_cpu, target_cc, cc_bin, ccache,
                 flags += ['--cpu=mips64', '--with-endian=big']
                 cc_bin = 'mips64-linux-gnuabi64-g++'
                 test_prefix = ['qemu-mips64', '-L', '/usr/mips64-linux-gnuabi64/']
-                test_cmd.remove('simd_32') # no SIMD on MIPS
             elif target in ['cross-arm32-baremetal']:
                 flags += ['--cpu=arm32', '--disable-neon', '--without-stack-protector', '--ldflags=-specs=nosys.specs']
                 cc_bin = 'arm-none-eabi-c++'
